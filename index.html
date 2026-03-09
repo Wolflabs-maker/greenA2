@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WOLF LABS // Eco-Sustainability System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Variáveis de Cor - Tema "Bio-Tech / The Green Challenge" */
+        :root {
+            --bg-base: #020617; /* Slate 950 baseada em escuro profundo */
+            --bg-panel: #064e3b; /* Emerald 900 escurecido */
+            --accent-main: #10b981; /* Emerald 500 */
+            --accent-main-hover: #059669; /* Emerald 600 */
+            --accent-sec: #84cc16; /* Lime 500 */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --error-red: #f43f5e; /* Rose 500 */
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            /* Padrão de fundo bio-tech */
+            background-image: 
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 20% 80%, rgba(132, 204, 22, 0.05) 0%, transparent 40%),
+                linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+        }
+
+        .tech-font { font-family: 'Space Mono', monospace; }
+        .emerald-glow { color: var(--accent-main); text-shadow: 0 0 15px rgba(16, 185, 129, 0.5); }
+        .lime-glow { color: var(--accent-sec); text-shadow: 0 0 15px rgba(132, 204, 22, 0.5); }
+
+        /* Painéis estilo Eco-Dashboard */
+        .hud-panel {
+            background: rgba(2, 44, 34, 0.7); /* Teal 950 com opacidade */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(16, 185, 129, 0.02);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Cantos Tech */
+        .tech-corner {
+            position: absolute; width: 15px; height: 15px; border-color: var(--accent-main); border-style: solid; opacity: 0.5;
+        }
+        .tech-corner.tl { top: 10px; left: 10px; border-width: 2px 0 0 2px; }
+        .tech-corner.tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; }
+        .tech-corner.bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; }
+        .tech-corner.br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
+
+        /* EXERCÍCIO: Terminal Typing */
+        .terminal-box {
+            background: #000000;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 6px;
+            box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.1);
+        }
+        .terminal-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--accent-main);
+            color: var(--accent-main);
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            text-align: center;
+            width: 150px;
+            padding: 5px;
+            outline: none;
+            text-transform: lowercase;
+            transition: all 0.3s;
+        }
+        .terminal-input:focus {
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.2);
+            border-bottom: 2px solid #fff;
+            color: #fff;
+        }
+
+        /* Botões de Múltipla Escolha */
+        .choice-btn {
+            background: rgba(2, 6, 23, 0.6);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-main);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer; padding: 18px 24px; border-radius: 6px;
+            text-align: left; font-weight: 500; font-size: 1rem;
+            display: flex; align-items: center; gap: 15px;
+            border-left: 3px solid transparent;
+        }
+        .choice-btn::before {
+            content: '\f054'; /* chevron-right */
+            font-family: 'FontAwesome'; color: var(--text-muted); transition: color 0.2s; font-size: 0.8rem;
+        }
+        .choice-btn:hover:not(.disabled) { 
+            background: rgba(4, 47, 46, 0.8); transform: translateX(5px); border-left-color: rgba(16, 185, 129, 0.5); 
+        }
+        .choice-btn.selected { 
+            background: rgba(16, 185, 129, 0.1); border-color: var(--accent-main); border-left-color: var(--accent-main); color: white; 
+        }
+        .choice-btn.selected::before { color: var(--accent-main); }
+
+        /* Bug Detector */
+        .bug-word {
+            display: inline-block; padding: 6px 14px; margin: 4px;
+            border-radius: 4px; cursor: pointer; transition: all 0.2s;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+            font-weight: 600;
+        }
+        .bug-word:hover { background: rgba(255,255,255,0.1); }
+        .bug-word.selected { 
+            background: rgba(244, 63, 94, 0.15); color: var(--error-red); 
+            border: 1px solid var(--error-red); box-shadow: 0 0 10px rgba(244, 63, 94, 0.3); 
+        }
+
+        /* Syntax Builder */
+        .link-node {
+            background: rgba(2, 6, 23, 0.8); border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 24px; border-radius: 6px; cursor: pointer;
+            transition: 0.2s; font-size: 0.95rem; color: var(--text-main); font-weight: 600;
+        }
+        .link-node:hover { background: rgba(4, 47, 46, 0.8); transform: translateY(-2px); border-color: var(--accent-sec); }
+        .link-node.selected { background: var(--accent-sec); color: #000; border-color: var(--accent-sec); }
+
+        /* Selector Integrado (Inline Toggle) */
+        .inline-btn {
+            background: rgba(132, 204, 22, 0.1);
+            border: 1px dashed var(--accent-sec);
+            color: var(--accent-sec);
+            padding: 4px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Space Mono', monospace;
+            font-weight: bold;
+            display: inline-flex;
+            min-width: 100px;
+            justify-content: center;
+        }
+        .inline-btn:hover { background: rgba(132, 204, 22, 0.2); }
+        .inline-btn.active { 
+            background: var(--accent-sec); color: #000; border-style: solid; 
+            box-shadow: 0 0 15px rgba(132, 204, 22, 0.4); 
+        }
+
+        /* Botão Principal */
+        .primary-btn {
+            background-color: var(--accent-main);
+            color: #020617;
+            border-radius: 6px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .primary-btn:hover {
+            background-color: #34d399;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+        }
+
+        /* Barra de Progresso */
+        .progress-path { 
+            width: 100%; height: 4px; background: rgba(2, 44, 34, 0.8); position: relative; margin-bottom: 40px; border-radius: 2px; overflow: hidden;
+        }
+        .progress-fill { 
+            position: absolute; top: 0; left: 0; height: 100%; 
+            background: var(--accent-main);
+            transition: width 0.5s ease; box-shadow: 0 0 10px var(--accent-main); 
+        }
+
+        /* Efeitos Visuais */
+        .hide { display: none !important; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .watermark-bg {
+            position: absolute; right: 20px; top: 20px; opacity: 0.03; font-size: 180px; color: var(--accent-main); pointer-events: none;
+        }
+
+        /* Fita Ticker */
+        .ticker-wrap { 
+            width: 100%; overflow: hidden; 
+            background: #020617;
+            padding: 8px 0; border-bottom: 1px solid rgba(16, 185, 129, 0.2); 
+        }
+        .ticker { display: inline-block; white-space: nowrap; animation: ticker 40s linear infinite; font-size: 0.70rem; color: var(--accent-main); font-weight: 600; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: #064e3b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-main); }
+    </style>
+</head>
+<body class="flex flex-col items-center">
+
+    <!-- Ticker -->
+    <div class="ticker-wrap tech-font uppercase tracking-widest fixed top-0 z-50">
+        <div class="ticker">
+            WOLF CORP /// ECO-SUSTAINABILITY SYSTEM /// ASSESSING OBLIGATIONS /// MUST, MUSTN'T, HAVE TO /// THE GREEN CHALLENGE PROTOCOL ACTIVE ///
+        </div>
+    </div>
+
+    <!-- Cabeçalho Principal -->
+    <header class="max-w-6xl mx-auto w-full flex justify-between items-center mt-16 mb-8 pb-6 relative z-10 border-b border-emerald-900/50 px-4 md:px-8">
+        <div class="flex items-center gap-5">
+            <div class="w-14 h-14 bg-slate-900 rounded-lg flex items-center justify-center border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                <span class="text-3xl text-emerald-400"><i class="fa-solid fa-leaf"></i></span>
+            </div>
+            <div>
+                <h1 class="text-3xl font-black uppercase tracking-tight text-white">WOLF <span class="emerald-glow">LABS</span></h1>
+                <p class="text-[0.65rem] tech-font text-emerald-200/50 uppercase tracking-[0.2em] mt-1">Node A2 • The Green Challenge</p>
+            </div>
+        </div>
+        <div class="text-right">
+            <div class="text-[0.65rem] tech-font text-emerald-200/50 uppercase tracking-widest mb-1">Eco-Match Score</div>
+            <div class="text-2xl font-bold tech-font text-white" id="accuracy-display">0%</div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto w-full flex-grow flex flex-col relative z-10 px-4 md:px-8">
+        
+        <!-- Abas de Navegação -->
+        <div class="flex gap-3 mb-8 overflow-x-auto pb-2 tech-font">
+            <button onclick="changeNode('lab')" id="tab-lab" class="bg-teal-950 border border-emerald-500/50 text-emerald-400 font-bold px-6 py-2.5 rounded text-xs uppercase tracking-widest hover:bg-teal-900 transition">01. Eco-Scanner (Grammar)</button>
+            <button onclick="changeNode('dilemma')" id="tab-dilemma" class="bg-transparent border border-emerald-900/50 text-emerald-600 font-bold px-6 py-2.5 rounded text-xs uppercase tracking-widest hover:bg-teal-950 transition">02. Sustainability Dilemmas</button>
+            <button onclick="changeNode('vault')" id="tab-vault" class="bg-transparent border border-emerald-900/50 text-emerald-600 font-bold px-6 py-2.5 rounded text-xs uppercase tracking-widest hover:bg-teal-950 transition">03. Green Office Policy</button>
+        </div>
+
+        <!-- SECÇÃO: LABORATÓRIO DE GRAMÁTICA -->
+        <div id="section-lab" class="hud-panel p-6 md:p-12 fade-in">
+            <div class="tech-corner tl"></div><div class="tech-corner tr"></div>
+            <div class="tech-corner bl"></div><div class="tech-corner br"></div>
+            <i class="fa-solid fa-recycle watermark-bg"></i>
+
+            <div class="flex justify-between items-end mb-8">
+                <div class="text-[0.75rem] tech-font text-white uppercase tracking-widest font-bold flex items-center gap-2" id="ex-counter">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> ENVIRONMENTAL RULE 01/20
+                </div>
+                <div class="text-[0.65rem] tech-font text-lime-400 uppercase tracking-widest bg-lime-900/20 border border-lime-500/30 px-3 py-1 rounded" id="ex-mode">
+                    MODE: LOADING...
+                </div>
+            </div>
+
+            <!-- Barra de Progresso -->
+            <div class="progress-path">
+                <div class="progress-fill" id="progress-bar" style="width: 5%"></div>
+            </div>
+
+            <div id="lab-container" class="min-h-[300px] flex flex-col justify-center items-center relative z-10">
+                <!-- Overlay Sucesso -->
+                <div id="success-overlay" class="hide absolute inset-0 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm z-20 rounded">
+                    <div class="bg-emerald-500 text-slate-950 font-black py-4 px-10 rounded text-sm uppercase tracking-widest shadow-[0_0_30px_rgba(16,185,129,0.6)] scale-110 transition-transform flex items-center gap-3">
+                        <i class="fa-solid fa-check-circle"></i> REGRA VERIFICADA
+                    </div>
+                </div>
+                <div id="lab-content" class="w-full text-center"></div>
+            </div>
+
+            <div class="mt-10 flex flex-col md:flex-row justify-between items-center gap-6 pt-6 border-t border-emerald-900/50 relative z-10">
+                <div id="undo-hint" class="text-[0.65rem] tech-font text-emerald-600 uppercase opacity-0 transition-opacity">
+                    > Modificar seleção, se necessário
+                </div>
+                <div class="flex gap-4 w-full md:w-auto">
+                    <button id="verify-btn" class="hide w-full md:w-auto primary-btn py-3.5 px-10 uppercase text-xs tech-font">Analisar Amostra</button>
+                    <button id="next-btn" onclick="nextExercise()" class="hide w-full md:w-auto bg-teal-950 border border-teal-800 text-white font-bold py-3.5 px-10 rounded uppercase text-xs hover:border-emerald-400 hover:text-emerald-400 transition tech-font">Próximo Arquivo ></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECÇÃO: DILEMAS -->
+        <div id="section-dilemma" class="hide hud-panel p-8 md:p-12 fade-in">
+            <div class="tech-corner tl"></div><div class="tech-corner tr"></div>
+            <div class="tech-corner bl"></div><div class="tech-corner br"></div>
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-black mb-2 uppercase text-white tracking-tight">Sustainability <span class="emerald-glow">Dilemmas</span></h2>
+                <p class="text-xs text-emerald-200/50 uppercase tracking-widest tech-font">Debates de Responsabilidade Ambiental</p>
+            </div>
+            <div id="dilemma-list" class="space-y-6 max-w-3xl mx-auto"></div>
+        </div>
+
+        <!-- SECÇÃO: COFRE DIGITAL -->
+        <div id="section-vault" class="hide hud-panel p-8 md:p-12 fade-in">
+            <div class="tech-corner tl"></div><div class="tech-corner tr"></div>
+            <div class="tech-corner bl"></div><div class="tech-corner br"></div>
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-black mb-2 uppercase text-white tracking-tight">Green Office <span class="lime-glow">Policy</span></h2>
+                <p class="text-xs text-emerald-200/50 uppercase tracking-widest tech-font">Missão de Casa (Homework)</p>
+            </div>
+            <div id="vault-list" class="space-y-4 max-w-3xl mx-auto"></div>
+        </div>
+
+    </main>
+
+    <footer class="max-w-6xl mx-auto w-full text-center mt-12 mb-8 opacity-40">
+        <p class="text-[0.6rem] tech-font uppercase tracking-widest text-emerald-200">Wolf Labs // A2 Grammar Engine // The Green Challenge Module</p>
+    </footer>
+
+    <script>
+        // DADOS: A2 Must, Mustn't, Have to (Environmental Rules)
+        const exercises = [
+            // EXERCÍCIO TERMINAL: Ficará sempre em #1!
+            {
+                id: 1,
+                type: 'terminal',
+                q: "PROHIBITION: The beach is full of plastic. Type the missing modal verb.<br><br>\"You <span class='text-emerald-500'>[_____]</span> leave your garbage on the sand.\"",
+                a: "mustn't",
+                starter: "When I go to the beach, I know I mustn't...",
+                feedback: "Acesso concedido! Usamos 'mustn't' para proibições estritas (coisas que são proibidas ou muito más)."
+            },
+            { 
+                id: 2, 
+                type: 'choice', 
+                q: "EXTERNAL OBLIGATION: The city has a new recycling law.", 
+                options: ["We must to separate glass from plastic.", "We has to separate glass from plastic.", "We have to separate glass from plastic."], 
+                a: 2, // 'We have to'
+                starter: "In my city, we have to...",
+                feedback: "Correto! Usamos 'have to' para obrigações externas, como leis ou regras da cidade. 'Must to' não existe!"
+            },
+            { 
+                id: 3, 
+                type: 'hunt', 
+                q: "BUG DETECTOR: Spot the grammatical error in this corporate rule.", 
+                sentence: ["The", "factory", "must", "to", "reduce", "its", "carbon", "emissions", "by", "20%."], 
+                a: 3, // 'to'
+                starter: "To protect the environment, factories must...",
+                feedback: "Bug detetado! Os verbos modais (como 'must') nunca são seguidos por 'to'. A forma correta é 'must reduce'."
+            },
+            { 
+                id: 4, 
+                type: 'link', 
+                q: "SYNTAX BUILDER: Reconstruct the environmental warning.", 
+                nodes: [["We", "Us"], ["must", "have"], ["protect", "to protect"], ["the"], ["environment."]], 
+                a: ["We", "must", "protect", "the", "environment."],
+                starter: "I personally feel that we must...",
+                feedback: "Estrutura verificada! 'Must' + verbo base expressa uma forte obrigação interna ou convicção pessoal."
+            },
+            { 
+                id: 5, 
+                type: 'inline', 
+                q: "INTERNAL OBLIGATION: A personal choice to be greener.", 
+                parts: ["I really ", " stop using single-use plastic bags at the supermarket."],
+                options: ["must", "have to", "mustn't"], 
+                a: 0, // 'must'
+                starter: "For my own habits, I really must...",
+                feedback: "Perfeito! Usamos 'must' quando a obrigação vem de nós mesmos (uma forte decisão pessoal)."
+            },
+            {
+                id: 6,
+                type: 'terminal',
+                q: "OBLIGATION (3rd Person): Type the missing verb.<br><br>\"My company <span class='text-emerald-500'>[_____]</span> to plant 100 trees this year because of the new law.\"",
+                a: "has",
+                starter: "A good company has to...",
+                feedback: "Correto! Na terceira pessoa do singular (My company = it), usamos 'has to' para regras externas."
+            },
+            { 
+                id: 7, 
+                type: 'hunt', 
+                q: "BUG DETECTOR: Spot the error in the park prohibition.", 
+                sentence: ["Visitors", "mustn't", "throwing", "trash", "in", "the", "lake."], 
+                a: 2, // 'throwing' -> 'throw'
+                starter: "One important rule for parks is that visitors mustn't...",
+                feedback: "Erro isolado! Depois de 'mustn't', o verbo principal deve estar na sua forma base. Não se usa '-ing'."
+            },
+            { 
+                id: 8, 
+                type: 'choice', 
+                q: "LACK OF OBLIGATION: It is not necessary to do this.", 
+                options: ["You don't have to print this email.", "You mustn't print this email.", "You haven't to print this email."], 
+                a: 0,
+                starter: "To save paper, I usually don't have to...",
+                feedback: "Muito bem! 'Don't have to' significa que não é obrigatório (não tens de fazer), ao contrário de 'mustn't' (é proibido fazer)."
+            },
+            { 
+                id: 9, 
+                type: 'inline', 
+                q: "PROHIBITION: Protecting wild nature.", 
+                parts: ["You ", " feed the wild animals! It is very dangerous for them."],
+                options: ["don't have to", "haven't to", "mustn't"], 
+                a: 2, // 'mustn't'
+                starter: "When visiting a national park, you mustn't...",
+                feedback: "Exatamente! Sendo perigoso e proibido, a única resposta correta é 'mustn't'."
+            },
+            { 
+                id: 10, 
+                type: 'link', 
+                q: "SYNTAX BUILDER: Eco-friendly commuting rules.", 
+                nodes: [["He", "Him"], ["has", "have"], ["to", "for"], ["take", "taking"], ["the"], ["bus."]], 
+                a: ["He", "has", "to", "take", "the", "bus."],
+                starter: "To reduce traffic, he has to...",
+                feedback: "Sintaxe válida! 'He has to' é a forma correta para a terceira pessoa no presente."
+            },
+            {
+                id: 11,
+                type: 'terminal',
+                q: "PROHIBITION: Type the contraction for 'must not'.<br><br>\"We <span class='text-emerald-500'>[_____]</span> waste water during a drought.\"",
+                a: "mustn't",
+                starter: "During a drought, we mustn't...",
+                feedback: "Verificado! 'Mustn't' é a forma mais natural de proibir o desperdício de água."
+            },
+            { 
+                id: 12, 
+                type: 'hunt', 
+                q: "BUG DETECTOR: Find the mistake in this eco-friendly action.", 
+                sentence: ["My", "brother", "have", "to", "buy", "a", "reusable", "water", "bottle", "for", "the", "gym."], 
+                a: 2, // 'have' -> 'has'
+                starter: "Instead of plastic, my brother has to...",
+                feedback: "Bug corrigido! 'My brother' (He) exige 'has to', e não 'have to'."
+            },
+            { 
+                id: 13, 
+                type: 'choice', 
+                q: "MUST VS HAVE TO: Internal conviction vs External rule.", 
+                options: ["I have to buy an electric car, I really want to help the planet.", "I must buy an electric car, I really want to help the planet.", "I must to buy an electric car, I really want to help the planet."], 
+                a: 1, // 'must'
+                feedback: "Correto. Como a vontade vem de um desejo pessoal ('I really want to'), usamos 'must'."
+            },
+            { 
+                id: 14, 
+                type: 'inline', 
+                q: "QUESTION: Asking about local recycling rules.", 
+                parts: ["", " we have to pay extra for plastic bags at this supermarket?"],
+                options: ["Must", "Are", "Do"], 
+                a: 2, // 'Do'
+                feedback: "Fantástico! Para fazer perguntas com 'have to' no presente, usamos o auxiliar 'Do' (ou 'Does')."
+            },
+            { 
+                id: 15, 
+                type: 'link', 
+                q: "SYNTAX BUILDER: Corporate sustainability goals.", 
+                nodes: [["Companies"], ["must", "has"], ["reduce", "reducing"], ["their"], ["plastic"], ["waste."]], 
+                a: ["Companies", "must", "reduce", "their", "plastic", "waste."],
+                feedback: "Perfeita reconstrução. 'Must' + verbo base dita a regra de sustentabilidade."
+            },
+            {
+                id: 16,
+                type: 'terminal',
+                q: "OBLIGATION: Type the missing base verb.<br><br>\"Everyone must <span class='text-emerald-500'>[_____]</span> their part to save the planet.\"",
+                a: "do",
+                feedback: "Correto! A expressão é 'do your part' (fazer a sua parte)."
+            },
+            { 
+                id: 17, 
+                type: 'hunt', 
+                q: "BUG DETECTOR: Energy conservation error.", 
+                sentence: ["You", "must", "not", "to", "leave", "the", "lights", "on", "when", "you", "leave", "the", "room."], 
+                a: 3, // 'to'
+                feedback: "Certo! 'Must not' (ou mustn't) NUNCA leva 'to' antes do verbo principal."
+            },
+            { 
+                id: 18, 
+                type: 'inline', 
+                q: "PAST OBLIGATION: The old environmental law.", 
+                parts: ["Last year, the factory ", " pay a huge fine for polluting the river."],
+                options: ["must", "has to", "had to"], 
+                a: 2, // 'had to'
+                feedback: "Exatamente. Não existe 'must' no passado. A forma de obrigação no passado é sempre 'had to'."
+            },
+            { 
+                id: 19, 
+                type: 'choice', 
+                q: "DIFFERENCE IN MEANING: Which sentence means 'It is forbidden'?", 
+                options: ["You don't have to dump chemicals here.", "You mustn't dump chemicals here.", "You not must dump chemicals here."], 
+                a: 1,
+                feedback: "Na mouche! 'Mustn't' expressa que algo é totalmente proibido (ilegal)."
+            },
+            { 
+                id: 20, 
+                type: 'link', 
+                q: "SYNTAX BUILDER: The ultimate challenge.", 
+                nodes: [["We"], ["must", "have"], ["save", "saving"], ["our"], ["planet", "planets"], ["now."]], 
+                a: ["We", "must", "save", "our", "planet", "now."],
+                feedback: "Missão Concluída! Demonstraste um excelente domínio sobre Must, Mustn't e Have to no contexto ambiental."
+            }
+        ];
+
+        // Dilemas: The Green Challenge
+        const dilemmas = [
+            { title: "INDIVIDUAL VS CORPORATION", q: "Individuals must recycle and save water, but large corporations create 70% of global pollution. Do regular people really have to change their habits if companies don't?", starters: ["I believe individuals must...", "Even if companies pollute, we have to...", "Governments must force corporations to..."] },
+            { title: "THE STRICT ECO-CITY", q: "Imagine a city where you MUST use a bicycle (cars are illegal) and you MUSTN'T produce more than 1 bag of trash per month. Would you live there?", starters: ["I wouldn't live there because I have to...", "I think it's a good idea, people mustn't...", "A rule like that means we must..."] },
+            { title: "FAST FASHION RULES", q: "Buying cheap clothes (fast fashion) hurts the environment. Should there be a rule that people mustn't buy more than 10 pieces of clothing a year?", starters: ["We don't have to make it a law, but...", "I agree, people mustn't buy...", "Instead of a limit, companies must..."] }
+        ];
+
+        // Cofre: Eco-Friendly Office (Homework)
+        const vaultQuestions = [
+            { q: "Task: Design a policy for an 'Eco-Friendly Office'. Write 5 specific rules for the employees.", s: "Be creative! Think about paper, electricity, coffee cups, and commuting." },
+            { q: "Requirement 1: Use MUST / MUSTN'T", s: "Example: 'Employees mustn't leave lights on after 6 PM.'" },
+            { q: "Requirement 2: Use HAVE TO", s: "Example: 'Everyone has to bring their own coffee mug.'" },
+            { q: "Format:", s: "Write the rules in a document and be ready to present them in the next session." }
+        ];
+
+        let currentIdx = 0;
+        let score = 0;
+        let selectedIndices = [];
+        let selectedBug = null;
+        let selectedChoice = null;
+
+        const labContent = document.getElementById('lab-content');
+        const verifyBtn = document.getElementById('verify-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const accuracyText = document.getElementById('accuracy-display');
+        const undoHint = document.getElementById('undo-hint');
+        const successOverlay = document.getElementById('success-overlay');
+
+        function init() {
+            // Algoritmo Fisher-Yates: Embaralhar TUDO EXCETO o primeiro exercício (Terminal)
+            const firstEx = exercises.shift(); // Remove o #1 (Terminal)
+            shuffleFisherYates(exercises);    // Embaralha o resto
+            exercises.unshift(firstEx);       // Coloca o #1 de volta no topo
+            
+            renderExercise();
+            renderVault();
+            renderDilemmas();
+            changeNode('lab');
+        }
+
+        // Função robusta de embaralhamento (Fisher-Yates)
+        function shuffleFisherYates(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function shuffle(array) {
+            return shuffleFisherYates([...array]);
+        }
+
+        function renderExercise() {
+            const ex = exercises[currentIdx];
+            if (!labContent) return;
+            labContent.innerHTML = '';
+            verifyBtn.classList.add('hide');
+            nextBtn.classList.add('hide');
+            undoHint.classList.add('opacity-0');
+            successOverlay.classList.add('hide');
+            
+            selectedIndices = [];
+            selectedBug = null;
+            selectedChoice = null;
+
+            document.getElementById('ex-counter').innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> ENVIRONMENTAL RULE ${String(currentIdx + 1).padStart(2, '0')}/${exercises.length}`;
+            
+            let modeName = "MÚLTIPLA ESCOLHA";
+            if(ex.type === 'hunt') modeName = "BUG DETECTOR";
+            if(ex.type === 'link') modeName = "SYNTAX BUILDER";
+            if(ex.type === 'inline') modeName = "SELETOR INLINE";
+            if(ex.type === 'terminal') modeName = "ENTRADA DE TERMINAL";
+            document.getElementById('ex-mode').innerText = `MODO: ${modeName}`;
+            
+            progressBar.style.width = `${((currentIdx) / exercises.length) * 100}%`;
+
+            let html = `<h2 class="text-xl md:text-2xl font-bold mb-8 text-white max-w-2xl mx-auto leading-relaxed whitespace-pre-line">${ex.q}</h2>`;
+
+            // Renderizar Novo Tipo: Terminal
+            if(ex.type === 'terminal') {
+                html += `
+                <div class="terminal-box p-8 max-w-xl mx-auto flex flex-col items-center justify-center mt-4">
+                    <p class="text-emerald-600 text-xs tech-font mb-4 uppercase tracking-widest">> A aguardar substituição manual...</p>
+                    <div class="flex items-center gap-3">
+                        <span class="text-emerald-500 font-bold text-xl">></span>
+                        <input type="text" id="terminal-input" class="terminal-input" autocomplete="off" placeholder="escreve aqui" onkeyup="checkTerminalInput(this)">
+                    </div>
+                </div>`;
+            }
+            // Selector Integrado (Inline)
+            else if(ex.type === 'inline') {
+                html += `<div class="text-xl md:text-2xl font-medium leading-loose mt-4 bg-black/40 p-6 rounded-lg border border-teal-900/50 shadow-inner max-w-2xl mx-auto text-white flex flex-wrap items-center justify-center gap-2">
+                    <span>${ex.parts[0]}</span>
+                    <button id="inline-btn" class="inline-btn" data-idx="-1" onclick="cycleInline(this)">[...]</button>
+                    <span>${ex.parts[1]}</span>
+                </div>`;
+            } else if(ex.type === 'choice') {
+                let shuffledOptions = ex.options.map((opt, i) => ({ text: opt, originalIdx: i }));
+                shuffledOptions = shuffle(shuffledOptions);
+                html += `<div class="grid grid-cols-1 gap-3 w-full max-w-xl mx-auto">`;
+                shuffledOptions.forEach((optObj) => {
+                    html += `<button onclick="handleChoice(${optObj.originalIdx}, this)" class="choice-btn tech-font text-sm md:text-base">${optObj.text}</button>`;
+                });
+                html += `</div>`;
+            } else if(ex.type === 'hunt') {
+                html += `<div class="text-xl font-medium leading-loose mt-4 bg-black/40 p-6 rounded-lg border border-teal-900/50 shadow-inner max-w-2xl mx-auto">`;
+                ex.sentence.forEach((word, i) => {
+                    html += `<span onclick="handleBug(${i}, this)" class="bug-word">${word}</span>`;
+                });
+                html += `</div>`;
+            } else if(ex.type === 'link') {
+                html += `<div class="flex flex-wrap justify-center gap-3 w-full mt-4 bg-black/40 p-8 rounded-lg border border-teal-900/50 max-w-3xl mx-auto">`;
+                ex.nodes.forEach((group, gIdx) => {
+                    let shuffledGroup = group.map((node, i) => ({ text: node, originalIdx: i }));
+                    shuffledGroup = shuffle(shuffledGroup);
+                    html += `<div class="flex flex-col gap-2">`;
+                    shuffledGroup.forEach((nodeObj) => {
+                        html += `<div onclick="handleLink(${gIdx}, ${nodeObj.originalIdx}, this)" class="link-node">${nodeObj.text}</div>`;
+                    });
+                    html += `</div>`;
+                });
+                html += `</div>`;
+            }
+
+            labContent.innerHTML = html;
+
+            // Focar automaticamente no input se for terminal
+            if(ex.type === 'terminal') {
+                setTimeout(() => { document.getElementById('terminal-input').focus(); }, 100);
+            }
+        }
+
+        // Lógica Terminal
+        function checkTerminalInput(el) {
+            if(el.value.trim().length > 1) {
+                verifyBtn.classList.remove('hide');
+                verifyBtn.onclick = verifyTerminal;
+            } else {
+                verifyBtn.classList.add('hide');
+            }
+            
+            // Permitir submeter com "Enter"
+            if (event.key === "Enter") {
+                verifyTerminal();
+            }
+        }
+
+        // Lógica Botão Inline
+        function cycleInline(el) {
+            const ex = exercises[currentIdx];
+            let idx = parseInt(el.getAttribute('data-idx'));
+            idx = (idx + 1) % ex.options.length;
+            el.setAttribute('data-idx', idx);
+            el.innerText = ex.options[idx];
+            el.classList.add('active');
+            selectedChoice = idx;
+            verifyBtn.classList.remove('hide');
+            verifyBtn.onclick = verifyInline;
+            undoHint.classList.remove('opacity-0');
+        }
+
+        // Lógica Múltipla Escolha
+        function handleChoice(i, el) {
+            const all = document.querySelectorAll('.choice-btn');
+            if(selectedChoice === i) {
+                selectedChoice = null; el.classList.remove('selected'); verifyBtn.classList.add('hide'); undoHint.classList.add('opacity-0');
+            } else {
+                all.forEach(e => e.classList.remove('selected')); el.classList.add('selected'); selectedChoice = i;
+                verifyBtn.classList.remove('hide'); verifyBtn.onclick = verifyChoice; undoHint.classList.remove('opacity-0');
+            }
+        }
+
+        // Lógica Bug Detector
+        function handleBug(i, el) {
+            const all = document.querySelectorAll('.bug-word');
+            if(selectedBug === i) {
+                selectedBug = null; el.classList.remove('selected'); verifyBtn.classList.add('hide'); undoHint.classList.add('opacity-0');
+            } else {
+                all.forEach(e => e.classList.remove('selected')); el.classList.add('selected'); selectedBug = i;
+                verifyBtn.classList.remove('hide'); verifyBtn.onclick = verifyBug; undoHint.classList.remove('opacity-0');
+            }
+        }
+
+        // Lógica Syntax Builder
+        function handleLink(gIdx, originalIdx, el) {
+            const groupEls = el.parentElement.querySelectorAll('.link-node');
+            if(selectedIndices[gIdx] === originalIdx) {
+                el.classList.remove('selected'); selectedIndices[gIdx] = undefined;
+            } else {
+                groupEls.forEach(e => e.classList.remove('selected')); el.classList.add('selected'); selectedIndices[gIdx] = originalIdx;
+            }
+            const allSet = selectedIndices.filter(x => x !== undefined).length === exercises[currentIdx].nodes.length;
+            verifyBtn.classList.toggle('hide', !allSet);
+            undoHint.classList.toggle('opacity-0', !selectedIndices.some(x => x !== undefined));
+            if(allSet) verifyBtn.onclick = verifyLink;
+        }
+
+        // Funções Validação
+        function verifyTerminal() { 
+            const inputVal = document.getElementById('terminal-input').value.toLowerCase().trim();
+            // Tratar casos de aspas se o aluno as colocar sem querer
+            const cleanInput = inputVal.replace(/['"]+/g, '');
+            const cleanAnswer = exercises[currentIdx].a.toLowerCase().replace(/['"]+/g, '');
+            finishEx(cleanInput === cleanAnswer); 
+        }
+        function verifyInline() { finishEx(selectedChoice === exercises[currentIdx].a); }
+        function verifyChoice() { finishEx(selectedChoice === exercises[currentIdx].a); }
+        function verifyBug() { finishEx(selectedBug === exercises[currentIdx].a); }
+        function verifyLink() {
+            const ex = exercises[currentIdx];
+            const isCorrect = selectedIndices.every((val, i) => val === ex.nodes[i].indexOf(ex.a[i]));
+            finishEx(isCorrect);
+        }
+
+        // Feedback / Finalizar
+        function finishEx(isCorrect) {
+            verifyBtn.classList.add('hide');
+            undoHint.classList.add('opacity-0');
+            const ex = exercises[currentIdx];
+            
+            // Desativar input do terminal se existir
+            const termInput = document.getElementById('terminal-input');
+            if(termInput) termInput.disabled = true;
+
+            if(isCorrect) {
+                triggerSuccess();
+                updateAccuracy(1);
+                let feedbackHtml = `
+                    <div class="mt-8 fade-in text-left max-w-2xl mx-auto">
+                        <div class="bg-teal-950/80 border-l-4 border-emerald-500 p-5 rounded-r">
+                            <span class="text-[0.65rem] font-bold text-emerald-400 uppercase tracking-widest block mb-2 tech-font">Análise do Sistema:</span>
+                            <p class="text-sm text-emerald-100/80">${ex.feedback || 'Sintaxe válida. Avançar para o próximo ficheiro.'}</p>
+                        </div>
+                `;
+                if(ex.starter) {
+                    feedbackHtml += `
+                        <div class="bg-gradient-to-r from-emerald-900/20 to-transparent border-l-2 border-emerald-500 p-4 rounded-r mt-4 text-left">
+                            <span class="text-[0.6rem] font-bold text-white uppercase tracking-widest block mb-2 tech-font">Speaking Starter:</span>
+                            <p class="text-sm italic text-emerald-200/60">"> ${ex.starter}"</p>
+                        </div>
+                    `;
+                }
+                feedbackHtml += `</div>`;
+                labContent.innerHTML += feedbackHtml;
+            } else {
+                const labPanel = document.getElementById('section-lab');
+                labPanel.style.border = "1px solid #f43f5e"; 
+                setTimeout(() => labPanel.style.border = "1px solid rgba(16, 185, 129, 0.2)", 1000);
+                if(termInput) {
+                    termInput.disabled = false;
+                    termInput.value = '';
+                    termInput.focus();
+                }
+            }
+            if(isCorrect) nextBtn.classList.remove('hide');
+        }
+
+        // Animação de sucesso
+        function triggerSuccess() {
+            successOverlay.classList.remove('hide');
+            setTimeout(() => successOverlay.classList.add('hide'), 800);
+        }
+
+        // Pontuação
+        function updateAccuracy(pts) { score += pts; accuracyText.innerText = `${Math.round((score / exercises.length) * 100)}%`; }
+
+        function nextExercise() {
+            currentIdx++;
+            if(currentIdx < exercises.length) renderExercise();
+            else finishLab();
+        }
+
+        // Fim
+        function finishLab() {
+            labContent.innerHTML = `
+                <div class="text-center py-12 fade-in">
+                    <i class="fa-solid fa-leaf text-6xl text-emerald-500 mb-6"></i>
+                    <h1 class="text-5xl font-black text-white mb-6 uppercase tracking-tighter">AVALIAÇÃO <span class="text-emerald-500">CONCLUÍDA</span></h1>
+                    <p class="text-emerald-200/70 mb-10 max-w-md mx-auto text-sm leading-relaxed">Missão cumprida. Demonstraste com sucesso o domínio dos Verbos Modais de Obrigação e Proibição <strong>(Must, Mustn't, Have to)</strong>. Estás autorizado a avançar para os dilemas ambientais.</p>
+                    <button onclick="changeNode('dilemma')" class="primary-btn py-4 px-12 text-sm tech-font">Aceder aos Dilemas</button>
+                </div>`;
+            progressBar.style.width = "100%";
+        }
+
+        // Renderizar Dilemas
+        function renderDilemmas() {
+            const container = document.getElementById('dilemma-list');
+            if (!container) return;
+            dilemmas.forEach((d, i) => {
+                const div = document.createElement('div');
+                div.className = 'bg-teal-950/40 hover:bg-teal-900/60 transition border border-emerald-900/50 p-8 rounded-lg fade-in';
+                div.innerHTML = `
+                    <div class="flex items-center gap-4 mb-5">
+                        <span class="bg-emerald-900/30 text-emerald-400 border border-emerald-500/30 tech-font font-bold px-3 py-1 text-[0.65rem] rounded uppercase tracking-widest">CENÁRIO 0${i+1}</span>
+                        <h3 class="text-xl font-bold text-white uppercase">${d.title}</h3>
+                    </div>
+                    <p class="text-emerald-100/80 mb-6 text-sm leading-relaxed">${d.q}</p>
+                    <div class="bg-black/40 p-5 rounded border border-white/5">
+                        <span class="text-[0.65rem] text-emerald-200/50 uppercase tracking-widest block mb-3 font-bold tech-font">Ferramentas de Fala:</span>
+                        <ul class="text-sm text-emerald-200/70 italic space-y-3">
+                            ${d.starters.map(s => `<li><span class="text-emerald-500 font-bold mr-2">></span>${s}</li>`).join('')}
+                        </ul>
+                    </div>`;
+                container.appendChild(div);
+            });
+        }
+
+        // Renderizar Cofre (Video Interview / Homework)
+        function renderVault() {
+            const list = document.getElementById('vault-list');
+            if (!list) return;
+            vaultQuestions.forEach((v, i) => {
+                const item = document.createElement('div');
+                item.className = 'bg-teal-950/40 p-6 rounded-lg fade-in flex flex-col md:flex-row gap-6 items-start md:items-center hover:bg-teal-900/60 transition border border-emerald-900/50';
+                item.style.animationDelay = `${i * 0.05}s`;
+                item.innerHTML = `
+                    <div class="w-12 h-12 bg-black rounded border border-emerald-900 flex items-center justify-center flex-shrink-0 text-white shadow-inner">
+                        <i class="fa-solid fa-pen-nib text-lime-500"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <p class="text-white font-bold mb-2 text-sm">${v.q}</p>
+                        <p class="text-xs text-emerald-200/60 tech-font">Info: <span class="italic text-emerald-200/40">"${v.s}"</span></p>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // Alternar Tabs
+        function changeNode(mode) {
+            document.querySelectorAll('.hud-panel').forEach(p => p.classList.add('hide'));
+            document.querySelectorAll('button[id^="tab-"]').forEach(b => {
+                b.classList.remove('border-emerald-500/50', 'text-emerald-400', 'bg-teal-950');
+                b.classList.add('border-emerald-900/50', 'text-emerald-600', 'bg-transparent');
+            });
+            const targetSection = document.getElementById(`section-${mode}`);
+            const targetTab = document.getElementById(`tab-${mode}`);
+            if (targetSection) targetSection.classList.remove('hide');
+            if (targetTab) {
+                targetTab.classList.remove('border-emerald-900/50', 'text-emerald-600', 'bg-transparent');
+                targetTab.classList.add('border-emerald-500/50', 'text-emerald-400', 'bg-teal-950');
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
